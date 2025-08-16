@@ -1,2 +1,2 @@
 # Excel-BI-Challenges
-Linkedin User https://www.linkedin.com/in/excelbi/ posts weekly Excel and Power Query challenges.
+Linkedin User https://www.linkedin.com/in/excelbi/ posts weekly Excel and Power Query challenges. See the list of hundreds of challenges [here](https://onedrive.live.com/:x:/g/personal/E11B26EEAACB7947/s!Akd5y6ruJhvhvjsDKLMvtQ7RVuqW?resid=E11B26EEAACB7947!7995&ithint=file%2Cxlsx&e=NWYAvM&migratedtospo=true&redeem=aHR0cHM6Ly8xZHJ2Lm1zL3gvcyFBa2Q1eTZydUpodmh2anNES0xNdnRRN1JWdXFXP2U9TldZQXZN).

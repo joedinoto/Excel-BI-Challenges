@@ -1,0 +1,24 @@
+# Challenge 312 
+# https://www.linkedin.com/feed/update/urn:li:activity:7360157954081288192/
+# my Power Query solution
+
+let
+    Source = Excel.CurrentWorkbook(){[Name="PQ_Challenge_312"]}[Content],
+    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}, {"Column2", type any}, {"Column3", type any}, {"Column4", type any}, {"Column5", type any}, {"Column6", type any}, {"Column7", type any}, {"Column8", type any}, {"Column9", type any}, {"Column10", type any}, {"Column11", type any}, {"Column12", type any}, {"Column13", type any}}),
+    #"Added Custom" = Table.AddColumn(#"Changed Type", "Custom", each if Text.Contains([Column1],"Category") then [Column2]&";"&[Column4]&";"& Number.ToText([Column6]) else null),
+    #"Filled Down" = Table.FillDown(#"Added Custom",{"Custom"}),
+    #"Split Column by Delimiter" = Table.SplitColumn(#"Filled Down", "Custom", Splitter.SplitTextByDelimiter(";", QuoteStyle.Csv), {"Custom.1", "Custom.2", "Custom.3"}),
+    #"Changed Type1" = Table.TransformColumnTypes(#"Split Column by Delimiter",{{"Custom.1", type text}, {"Custom.2", type text}, {"Custom.3", Int64.Type}}),
+    #"Filtered Rows" = Table.SelectRows(#"Changed Type1", each ([Column13] <> null)),
+    #"Promoted Headers" = Table.PromoteHeaders(#"Filtered Rows", [PromoteAllScalars=true]),
+    #"Changed Type2" = Table.TransformColumnTypes(#"Promoted Headers",{{"Months", type text}, {"Jan", type any}, {"Feb", type any}, {"Mar", type any}, {"Apr", type any}, {"May", type any}, {"Jun", type any}, {"Jul", type any}, {"Aug", type any}, {"Sep", type any}, {"Oct", type any}, {"Nov", type any}, {"Dec", type any}, {"Home Loan", type text}, {"Alabama", type text}, {"2023", Int64.Type}}),
+    #"Renamed Columns" = Table.RenameColumns(#"Changed Type2",{{"Home Loan", "Category"}, {"Alabama", "State"}, {"2023", "Year"}, {"Months", "Name"}}),
+    #"Filtered Rows1" = Table.SelectRows(#"Renamed Columns", each ([Jan] <> "Jan")),
+    #"Unpivoted Other Columns" = Table.UnpivotOtherColumns(#"Filtered Rows1", {"Name", "Category", "State", "Year"}, "Attribute", "Value"),
+    #"Renamed Columns1" = Table.RenameColumns(#"Unpivoted Other Columns",{{"Attribute", "Month"}, {"Value", "Amount"}}),
+    #"Added Custom1" = Table.AddColumn(#"Renamed Columns1", "Quarter", each if List.Contains({"Jan","Feb","Mar"}, [Month]) then "Q1" else if List.Contains({"Apr","May","Jun"}, [Month]) then "Q2" else if List.Contains({"Jul","Aug","Sep"}, [Month]) then "Q3" else "Q4"),
+    #"Changed Type3" = Table.TransformColumnTypes(#"Added Custom1",{{"Quarter", type text}}),
+    #"Grouped Rows" = Table.Group(#"Changed Type3", {"Name", "Category", "State", "Year", "Quarter"}, {{"Amount", each List.Sum([Amount]), type number}}),
+    #"Pivoted Column" = Table.Pivot(#"Grouped Rows", List.Distinct(#"Grouped Rows"[Quarter]), "Quarter", "Amount", List.Sum)
+in
+    #"Pivoted Column"
